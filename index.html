@@ -67,7 +67,6 @@
     gap: 20px;
   }
 
-  /* Name selector */
   .name-row {
     display: flex;
     gap: 10px;
@@ -94,7 +93,6 @@
     border-color: var(--ink);
   }
 
-  /* Photo area */
   .photo-zone {
     border: 1.5px dashed var(--border);
     border-radius: 8px;
@@ -156,7 +154,6 @@
 
   input[type="file"] { display: none; }
 
-  /* Submit button */
   .submit-btn {
     width: 100%;
     padding: 18px;
@@ -185,7 +182,6 @@
 
   .submit-btn:not(:disabled):active { transform: scale(0.98); }
 
-  /* Status */
   .status {
     display: none;
     padding: 16px;
@@ -224,7 +220,6 @@
     text-transform: uppercase;
   }
 
-  /* Loading dots */
   .dots span {
     animation: blink 1.2s infinite;
     opacity: 0;
@@ -236,51 +231,6 @@
     0%, 80%, 100% { opacity: 0; }
     40% { opacity: 1; }
   }
-
-  /* Receipt preview result */
-  .result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
-  }
-
-  .result-item {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 10px;
-  }
-
-  .result-key {
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 3px;
-  }
-
-  .result-val {
-    font-size: 13px;
-    color: var(--ink);
-    word-break: break-word;
-  }
-
-  .result-item.full { grid-column: 1 / -1; }
-
-  /* Config notice */
-  .config-notice {
-    background: #fff8e6;
-    border: 1px solid #f0d080;
-    border-radius: 4px;
-    padding: 14px;
-    font-size: 11px;
-    line-height: 1.7;
-    color: #7a5c00;
-    display: none;
-  }
-
-  .config-notice.visible { display: block; }
 
   footer {
     padding: 16px 28px 32px;
@@ -302,20 +252,11 @@
 
 <main>
 
-  <!-- Config notice (shown if not configured) -->
-  <div class="config-notice" id="configNotice">
-    ⚠ Open this file and set your <strong>APPS_SCRIPT_URL</strong> and <strong>NAMES</strong> at the top of the script section before using.
-  </div>
-
-  <!-- Who is logging -->
   <div>
     <div class="header-label" style="margin-bottom:10px">Logged by</div>
-    <div class="name-row" id="nameRow">
-      <!-- populated by JS -->
-    </div>
+    <div class="name-row" id="nameRow"></div>
   </div>
 
-  <!-- Photo -->
   <div class="photo-zone" id="photoZone" onclick="triggerCamera()">
     <svg class="photo-icon" id="photoIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
       <path d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.51 2.25 8.27 2.25 9.11v9.64c0 .92.746 1.75 1.75 1.75h16c1.004 0 1.75-.83 1.75-1.75V9.11c0-.84-.749-1.6-1.802-1.705a48.14 48.14 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.874-1.055H9.422c-.78 0-1.505.43-1.874 1.055L6.827 6.175z"/>
@@ -325,35 +266,23 @@
     <button class="photo-change" id="photoChange" style="display:none" onclick="event.stopPropagation(); triggerCamera()">Change</button>
   </div>
   <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handlePhoto(this)">
-  <img id="previewImg" style="display:none">
 
-  <!-- Status -->
   <div class="status" id="status"></div>
 
-  <!-- Submit -->
   <button class="submit-btn" id="submitBtn" disabled onclick="submitReceipt()">
     Log receipt
   </button>
 
 </main>
 
-<footer>Receipt Logger &mdash; v1.0</footer>
+<footer>Receipt Logger &mdash; Martin &amp; Cata</footer>
 
 <script>
-  // ============================================================
-  // CONFIGURATION — edit these two values
-  // ============================================================
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVjwmTRFdj7TfTdSd2pu6yy4prFhe8S8QUsP_B4i5UPtzlIhiuA7h3RuRbSqh6SkX-cQ/exec';
-  const NAMES = ['Martin', 'Cata']; // change to your actual names
-  // ============================================================
+  const NAMES = ['Martin', 'Cata'];
 
   let selectedName = NAMES[0];
   let photoBase64  = null;
-
-  // Check config
-  if (APPS_SCRIPT_URL === 'PASTE_YOUR_WEB_APP_URL_HERE') {
-    document.getElementById('configNotice').classList.add('visible');
-  }
 
   // Build name buttons
   const nameRow = document.getElementById('nameRow');
@@ -377,7 +306,6 @@
     const file = input.files[0];
     if (!file) return;
 
-    // Show preview
     const reader = new FileReader();
     reader.onload = (e) => {
       const zone = document.getElementById('photoZone');
@@ -386,7 +314,6 @@
       document.getElementById('photoLabel').style.display = 'none';
       document.getElementById('photoChange').style.display = 'block';
 
-      // Create preview image inside zone
       let img = zone.querySelector('img');
       if (!img) {
         img = document.createElement('img');
@@ -394,7 +321,6 @@
       }
       img.src = e.target.result;
 
-      // Store base64 (strip the data:image/...;base64, prefix)
       photoBase64 = e.target.result.split(',')[1];
       document.getElementById('submitBtn').disabled = false;
       setStatus('', '');
@@ -415,13 +341,14 @@
     btn.disabled = true;
 
     setStatus('loading', `
-      <div class="status-title">Processing<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
-      Sending to Claude for extraction
+      <div class="status-title">Sending<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
+      Receipt is being processed
     `);
 
     try {
-      const response = await fetch(APPS_SCRIPT_URL, {
+      await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: photoBase64,
@@ -430,22 +357,12 @@
         })
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setStatus('success', `
-          <div class="status-title">✓ Logged successfully</div>
-          <div class="result-grid">
-            <div class="result-item"><div class="result-key">Store</div><div class="result-val">${data.store || '—'}</div></div>
-            <div class="result-item"><div class="result-key">Amount</div><div class="result-val">${data.amount || '—'}</div></div>
-          </div>
-        `);
-        // Reset after success
-        setTimeout(resetForm, 4000);
-      } else {
-        setStatus('error', `<div class="status-title">Error</div>${data.error || 'Something went wrong'}`);
-        btn.disabled = false;
-      }
+      // no-cors means we can't read the response — assume success
+      setStatus('success', `
+        <div class="status-title">✓ Receipt sent</div>
+        Check your Google Sheet in a few seconds
+      `);
+      setTimeout(resetForm, 4000);
 
     } catch (err) {
       setStatus('error', `<div class="status-title">Error</div>${err.message}`);
